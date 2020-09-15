@@ -1,4 +1,7 @@
 const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 
 const userSchema = mongoose.Schema({
   name: {
@@ -26,6 +29,42 @@ const userSchema = mongoose.Schema({
     type: Number
   }
 })
+
+// 유저 정보를 저장하기 전 처리 로직
+userSchema.pre('save', next => {
+  const user = this
+  // 비밀번호를 수정할 경우
+  if (user.isModified('password')) {
+    // 비밀번호 암호화
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+      if (err) return next(err)
+      bcrypt.hash(user.password, salt, function(err, hash) {
+        if (err) return next(err)
+        // 해쉬화된 비밀번호 저장
+        user.password = hash
+        next()
+      })
+    })
+  }
+})
+
+
+// 사용자 정의 메소드
+userSchema.methods.comparePassword = function(plainPassword, callback) {
+  bcrypt.compare(plainPassword, this.password, (err, isMatch) => {
+    if (err) return callback(err)
+    callback(null, isMatch)
+  })
+}
+userSchema.methods.generateToken = function(callback) {
+  const user = this
+  const token = jwt.sign(user._id.toHexString(), 'secretToken')
+  user.token = token
+  user.save(function(err, user) {
+    if (err) return callback(err)
+    callback(null, user)
+  })
+}
 
 const User = mongoose.model('User', userSchema)
 
