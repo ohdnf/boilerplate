@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
+const config = require('../config/key')
+
 const userSchema = mongoose.Schema({
   name: {
     type: String,
@@ -60,7 +62,7 @@ userSchema.methods.comparePassword = function(plainPassword, callback) {
 }
 userSchema.methods.generateToken = function(callback) {
   const user = this
-  const token = jwt.sign(user._id.toHexString(), 'secretToken')
+  const token = jwt.sign(user._id.toHexString(), config.signature)
   user.token = token
   user.save(function(err, user) {
     if (err) return callback(err)
@@ -71,7 +73,7 @@ userSchema.methods.generateToken = function(callback) {
 userSchema.statics.findByToken = function(token, callback) {
   const user = this
   // decode token
-  jwt.verify(token, 'secretToken', function(err, decoded) {
+  jwt.verify(token, config.signature, function(err, decoded) {
     // 복호화된 유저 id를 이용해 유저 찾기
     user.findOne({ "_id": decoded, "token": token}, function(err, user) {
       if (err) return callback(err)
