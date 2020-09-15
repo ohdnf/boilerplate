@@ -31,7 +31,7 @@ const userSchema = mongoose.Schema({
 })
 
 // 유저 정보를 저장하기 전 처리 로직
-userSchema.pre('save', next => {
+userSchema.pre('save', function(next) {
   const user = this
   // 비밀번호를 수정할 경우
   if (user.isModified('password')) {
@@ -45,6 +45,8 @@ userSchema.pre('save', next => {
         next()
       })
     })
+  } else {
+    next()
   }
 })
 

@@ -38,7 +38,7 @@ app.post('/signup', (req, res) => {
 
 app.post('/login', (req, res) => {
   // 유저 확인
-  User.findOne({email: req.body.email}, (res, user) => {
+  User.findOne({email: req.body.email}, (err, user) => {
     if (!user) {
       // 비회원
       return res.json({
