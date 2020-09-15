@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const config = require('./config/key')
+
 const { User } = require('./models/User')
 
 app.use(express.json())
@@ -9,7 +11,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // MongoDB
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://ohdnf:q1w2e3r4@boiler-plate.pxzmy.mongodb.net/<dbname>?retryWrites=true&w=majority', {
+mongoose.connect(config.mongoURI, {
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
 })
   .then(() => {
