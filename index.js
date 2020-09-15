@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 
 const config = require('./config/key')
 const { User } = require('./models/User')
+const { auth } = require('./middleware/auth')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -26,7 +27,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-app.post('/signup', (req, res) => {
+app.post('/api/user/signup', (req, res) => {
   const user = new User(req.body)
   user.save((err, userInfo) => {
     if (err) return res.json({ success: false, err })
@@ -36,7 +37,7 @@ app.post('/signup', (req, res) => {
   })
 })
 
-app.post('/login', (req, res) => {
+app.post('/api/user/login', (req, res) => {
   // 유저 확인
   User.findOne({email: req.body.email}, (err, user) => {
     if (!user) {
@@ -69,6 +70,18 @@ app.post('/login', (req, res) => {
         }
       })
     }
+  })
+})
+
+app.get('/api/user/auth', auth, (req, res) => {
+  // 인증 성공
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    image: req.user.image
   })
 })
 
