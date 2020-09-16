@@ -23,7 +23,11 @@ mongoose.connect(config.mongoURI, {
 
 // Router 정의
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello, World!')
+})
+
+app.get('/api/hello', (req, res) => {
+  res.send('hello, world!')
 })
 
 app.post('/api/user/signup', (req, res) => {

@@ -3,13 +3,16 @@ import axios from 'axios'
 
 function LandingPage() {
   useEffect(() => {
-    axios.get('/')
+    axios.get('/hello')
       .then(res => {
-        console.log(res.data)
+        console.log(res)
       })
-  })
+  }, [])
   return (
-    <div>
+    <div style={{
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+      width: '100%', height: '100vh'
+    }}>
       LandingPage
     </div>
   )
